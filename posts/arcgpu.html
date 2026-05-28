@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Intel Arc B580 firmware debugging (GSC recovery)</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <a href="../index.html">← back</a>
+
+    <h1>Intel Arc B580 firmware debugging (GSC recovery)</h1>
+
+    <p class="meta">
+      Notes from debugging a Linux bring-up failure involving Intel Arc B580 (BMG G21 / Battlemage)
+    </p>
+
+    <p>
+      Spent the day trying to untangle firmware weirdness on my Arc B580.
+    </p>
+
+    <p>
+      Arc seems to split responsibilities across multiple firmware layers: PCode, GSC, OpROM code/data, GuC, and HuC.
+      If one layer fails early enough, the entire graphics stack can die before <code>/dev/dri</code> even exists.
+      (New GPU firmware stacks are annoyingly complicated, but Intel exposing these layers publicly made debugging possible.)
+    </p>
+
+    <p>
+      In my case, it looked like the previous owner corrupted the GSC firmware somehow.
+      Every cold boot caused the <code>xe</code> driver to fail during early initialization while interacting with PCode,
+      so the card never came online properly.
+    </p>
+
+    <h2>Debugging path</h2>
+
+    <ul>
+      <li>Intermittent /dev/dri creation</li>
+      <li>LightDM crashing with “no screens found”</li>
+      <li>PCode initialization timeouts</li>
+      <li>“Survivability mode”</li>
+      <li>Silent <code>xe</code> hangs immediately after “deactivate VGA console”</li>
+      <li>Different kernel behavior (6.8, 6.17 generic, 6.17 OEM)</li>
+      <li>Card occasionally disappearing from <code>lspci</code> after reseating</li>
+    </ul>
+
+    <p>
+      At one point it looked more like hardware damage than firmware corruption.
+      I checked for obvious shorts on 12V and 3.3V rails, and measured resistance/voltages on Vcore,
+      memory, and memory controller rails. Nothing abnormal showed up, but that’s the extent of my EE knowledge.
+    </p>
+
+    <h2>Recovery</h2>
+
+    <p>
+      Using Intel’s <code>igsc</code> tool compiled from source, I was able to access the Graphics Security Controller
+      through <code>/dev/mei1</code> and reflash the GSC firmware from 21.1137 to 21.1182.
+    </p>
+
+    <h2>After firmware update</h2>
+
+    <ul>
+      <li>Mesa detected: Intel Arc B580 Graphics (BMG G21)</li>
+      <li>Vulkan initialized normally</li>
+      <li>No more LLVM software rendering for OpenGL</li>
+    </ul>
+
+    <h2>Remaining issues</h2>
+
+    <p>
+      There appears to be a separate upstream issue in Linux 6.17 <code>xe</code>,
+      related to GuC scheduler idle crashes on Battlemage.
+      This seems unrelated to the firmware issue.
+    </p>
+
+    <p>
+      Linux support for Arc has come a long way. The combination of <code>xe</code>, Mesa, fwupd,
+      and tools like <code>igsc</code> made recovery possible without needing to immediately switch OS.
+    </p>
+
+    <p>
+      That said, firmware distribution is still fragmented. My ASRock card firmware is not available on LVFS yet,
+      so full recovery may still require vendor flashing tools on Windows for some regions.
+    </p>
+
+    <p>
+      Linux graphics on Intel Arc is still a surprisingly deep stack.
+    </p>
+
+    <h2>References</h2>
+
+    <ul>
+      <li><a href="https://github.com/intel/igsc">Intel GSC tooling (igsc)</a></li>
+      <li><a href="https://fwupd.org/">fwupd project</a></li>
+      <li><a href="https://docs.kernel.org/gpu/xe/">Linux xe driver documentation</a></li>
+      <li><a href="https://www.igorslab.de/en/intel-arc-b580-in-teardown-board-topology-power-consumption-with-load-peaks-and-a-putty-mod/3/">Igor’s Lab teardown context</a></li>
+      <li><a href="https://forums.linuxmint.com/viewtopic.php?t=441848">Linux Mint discussion 1</a></li>
+      <li><a href="https://forums.linuxmint.com/viewtopic.php?t=424779">Linux Mint discussion 2</a></li>
+    </ul>
+
+    <p>
+      Also collected VRM rail resistance measurements during debugging if someone needs it(provided i didnt delete the pics from my phone lol).
+    </p>
+
+  </div>
+</body>
+</html>
