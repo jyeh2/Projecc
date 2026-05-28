@@ -1,0 +1,82 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ASRock Arc B570 Thermal Pads Guide</title>
+  <link rel="stylesheet" href="../assets/style.css">
+</head>
+
+<body>
+  <div class="container">
+
+    <a href="../index.html">← back</a>
+
+    <h1>ASRock Arc B570 Thermal Pads Guide</h1>
+
+    <p class="meta">
+      Thermal pad thickness mapping for ASRock Arc B570 PCB and heatsink contact points
+    </p>
+
+    <p>
+      This is a guide to thermal pad thickness and a practice for me to write in markdown mode in Vim lol
+      (But needless to say I cannot be held accountable if your B570 breaks).
+    </p>
+
+    <p>
+      What’s more interesting is that there is a thermal pad for the 5th VRAM on the heatsink that’s not present on the board.
+      There is a possibility that ASRock may have reused measurements from the B580 model.
+    </p>
+
+    <h2>Measurement Method</h2>
+
+    <p>
+      All thermal pad thicknesses were measured and rounded up to the nearest 0.25 mm,
+      as pads compress under mounting pressure.
+    </p>
+
+    <h2>PCB Side</h2>
+
+    <p>
+      There are 3 thermal pads contacting inductors on the PCB side, located near the top of the board (connector area).
+    </p>
+
+    <ul>
+      <li>2 at top side (memory VRM): 1.5mm</li>
+      <li>1 near 8-pin connector: 1.75mm</li>
+    </ul>
+
+    <img src="../assets/b580570pix/Pcb_1.jpg" alt="PCB side thermal pads">
+
+    <h2>Heatsink Side</h2>
+
+    <ul>
+      <li>Memory: 1.5mm across</li>
+      <li>Bottom memory VRM: 2mm (drMOS), 1mm (coils)</li>
+      <li>Top memory VRM: 2mm (drMOS)</li>
+      <li>Core VRM: 1.5mm (coils), 1.5mm (drMOS), ~1.75mm uncompressed observed</li>
+      <li>Topside controller: 1.5mm</li>
+    </ul>
+
+    <h2>Comparison Notes</h2>
+
+    <p>
+      Side-by-side comparison suggests the VRM drMOS pads are closer to 1.75mm uncompressed.
+    </p>
+
+    <img src="../assets/b580570pix/comparison.png" alt="Thermal pad comparison">
+    <img src="../assets/b580570pix/Pcb_2.jpg" alt="Heatsink PCB view">
+
+    <h2>Notes</h2>
+
+    <p>
+      This is based on physical measurement and visual inspection only. Compression behavior varies depending on mounting pressure,
+      pad material, and heatsink tolerances.
+    </p>
+
+    <p>
+      Also collected these measurements as a reference for future repadding or teardown comparison.
+    </p>
+
+  </div>
+</body>
+</html>
